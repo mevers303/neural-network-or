@@ -136,13 +136,13 @@ def forward_pass(sample_i):
 def back_propagation(y_pred, sample_i):
     global samples, targets, x, weights, z
 
-    ########################################
-    ### CALCULATE LOSS AND LOSS GRADIENT ###
+    #####################################
+    ### CALCULATE LOSS AND dL/dy_pred ###
     loss = mse(targets[sample_i], y_pred)
     loss_gradient = mse_derivative(targets[sample_i], y_pred)
 
-    ######################################
-    ### CALCULATE ACTIVATION GRADIENTS ###
+    #######################
+    ### CALCULATE dσ/dz ###
     # store the gradients in a two dimensional array similar to x and z
     activation_gradient = [
         [],      # layer 0 has no activation function
@@ -159,13 +159,34 @@ def back_propagation(y_pred, sample_i):
     # no activation function here
     
     #############################
-    ### CALCULATE Z GRADIENTS ###
-    # LAYER 2
+    ### CALCULATE dz/dw ###
+    # three dimensional like the weights
     z_gradient = [
-        [],      # layer 0 has no z
-        [0, 0],  # layer 1 has 2 neurons
-        [0]      # layer 2 has 1 neuron
+        [],  # layer 0 has no z because it is the input layer
+        [
+            np.zeros(2).tolist(),  # layer 1, neuron 0
+            np.zeros(2).tolist(),  # layer 1, neuron 1
+            np.zeros(1).tolist()   # layer 1, bias
+        ],  
+        [
+            np.zeros(2).tolist(),  # layer 2, neuron 0
+            np.zeros(1).tolist()   # layer 2, bias
+        ]
     ]
 
     # LAYER 2
+    z_gradient[2][0][0] = x[1][0]
+    z_gradient[2][0][1] = x[1][1]
+    z_gradient[2][0][2] = x[1][2]
+    # LAYER 1
+    z_gradient[1][0][0] = x[0][0]
+    z_gradient[1][0][1] = x[0][1]
+    z_gradient[1][0][2] = x[0][2]
+    z_gradient[1][1][0] = x[0][0]
+    z_gradient[1][1][1] = x[0][1]
+    z_gradient[1][1][2] = x[0][2]
+    # LAYER 0
+    # no z values here because there are no weights leading into the input layer
+    
+    
     
