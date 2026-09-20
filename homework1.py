@@ -188,5 +188,36 @@ def back_propagation(y_pred, sample_i):
     # LAYER 0
     # no z values here because there are no weights leading into the input layer
     
-    
+    #######################
+    ### CALCULATE dl/dw ###
+    #######################
+    # same shape as the weights
+    total_gradient = [
+        [],  # layer 0 has no z because it is the input layer
+        [
+            np.zeros(2).tolist(),  # layer 1, neuron 0
+            np.zeros(2).tolist(),  # layer 1, neuron 1
+            np.zeros(1).tolist()   # layer 1, bias
+        ],  
+        [
+            np.zeros(2).tolist(),  # layer 2, neuron 0
+            np.zeros(1).tolist()   # layer 2, bias
+        ]
+    ]
+
+    # now do the chain rule: dl/dw = dl/dz * dz/dw
+    # LAYER 2
+    total_gradient[2][0][0] = loss_gradient * activation_gradient[2][0] * z_gradient[2][0][0]
+    total_gradient[2][0][1] = loss_gradient * activation_gradient[2][0] * z_gradient[2][0][1]
+    total_gradient[2][0][2] = loss_gradient * activation_gradient[2][0] * z_gradient[2][0][2]
+    # LAYER 1
+    total_gradient[1][0][0] = loss_gradient * activation_gradient[1][0] * z_gradient[1][0][0]
+    total_gradient[1][0][1] = loss_gradient * activation_gradient[1][0] * z_gradient[1][0][1]
+    total_gradient[1][0][2] = loss_gradient * activation_gradient[1][0] * z_gradient[1][0][2]
+    total_gradient[1][1][0] = loss_gradient * activation_gradient[1][1] * z_gradient[1][1][0]
+    total_gradient[1][1][1] = loss_gradient * activation_gradient[1][1] * z_gradient[1][1][1]
+    total_gradient[1][1][2] = loss_gradient * activation_gradient[1][1] * z_gradient[1][1][2]
+    # LAYER 0
+    # no weights to update here because there are no weights leading into the input layer
+
     
