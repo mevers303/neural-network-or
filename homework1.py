@@ -1,0 +1,171 @@
+# Mark Evers
+# 9/20/2026
+# CSCI 4931 - Deep Learning
+# Homework 1
+
+import numpy as np
+
+# our 2-2-1 neural network
+# layer 0 has 2 neurons + 1 bias
+# layer 1 has 2 neurons + 1 bias
+# layer 2 has 1 neuron
+
+
+#############################
+######### VARIABLES #########
+#############################
+# our inputs
+samples = [
+    (0, 0),
+    (0, 1),
+    (1, 0),
+    (1, 1)
+]
+
+# our expected outputs
+targets = [
+    0,
+    1,
+    1,
+    1
+]
+
+# these are the neuron outputs (aka the inputs to the next layer)
+# these will be two dimensional arrays where
+# - the first dimension is the layer index
+# - the second dimension is the neuron index
+x = [
+    [0, 0, 1],      # layer 0: [neuron 0, neuron 1, bias]
+    [0, 0, 1],      # layer 1: [neuron 0, neuron 1, bias]
+    [0]    # layer 2: [neuron 0]
+]
+
+# the weights will be three dimensional arrays where
+# - the first dimension is the layer index
+# - the second dimension is the neuron index
+# - the third dimension is the weight index
+# note: the weights are preceeding the neuron
+weights = [
+    [],  # layer 0 has no weights because it is the input layer
+    [
+        np.random.rand(2).tolist(),  # layer 1, neuron 0
+        np.random.rand(2).tolist(),  # layer 1, neuron 1
+        np.random.rand(1).tolist()   # layer 1, bias
+    ],  
+    [
+        np.random.rand(2).tolist(),  # layer 2, neuron 0
+        np.random.rand(1).tolist()   # layer 2, bias
+    ]
+]
+
+# `z` will be the input to the activation function
+# two dimensional like x
+z = [
+    [],      # layer 0 has no input to an activation function
+    [0, 0],  # layer 1, neuron 0 and neuron 1
+    [0]      # layer 2, neuron 0
+]
+
+
+
+
+
+#################################
+########### FUNCTIONS ###########
+#################################
+# our activation function and its derivative
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    s = sigmoid(x)
+    return s * (1 - s)
+
+# our loss function and its mse_derivative
+# NOTE: this is for stochastic gradient descent, so we don't divide by n because n always equals 1
+def mse(y_true, y_pred):
+    return np.mean((y_true - y_pred) ** 2) / 2
+
+def mse_derivative(y_true, y_pred):
+    # Derivative with respect to y_pred: 2 * (y_pred - y_true) / N
+    return y_pred - y_true
+
+
+
+
+#######################################
+############ FORWARD PASS #############
+#######################################
+def forward_pass(sample_i):
+    global samples, targets, x, weights, z
+
+    ### LAYER 0 ###
+    # the outputs of the input layer, plus the bias
+    x[0][0] = samples[sample_i][0]
+    x[0][1] = samples[sample_i][1]
+    x[0][2] = 1
+    
+
+    ### LAYER 1 ###
+    # calculate the inputs to the activation function for layer 1
+    z[1][0] = (x[0][0] * weights[1][0][0]) + (x[0][1] * weights[1][0][1]) + (x[0][2] * weights[1][0][2])
+    z[1][1] = (x[0][0] * weights[1][1][0]) + (x[0][1] * weights[1][1][1]) + (x[0][2] * weights[1][1][2])
+    
+    # calculate the outputs of the activation function for layer 1, plus the bias
+    x[1][0] = sigmoid(z[1][0])
+    x[1][1] = sigmoid(z[1][1])
+    x[1][2] = 1  # the bias
+
+    ### LAYER 2 ###
+    # calculate the inputs to the activation function for layer 2
+    z[2][0] = (x[1][0] * weights[2][0][0]) + (x[1][1] * weights[2][0][1]) + (x[1][2] * weights[2][0][2])
+
+    # calculate the outputs of the activation function for layer 2
+    x[2][0] = sigmoid(z[2][0])
+
+    # we now have the predicted output!
+    return x[2][0]
+
+
+
+
+
+#######################################
+########## BACK PROPAGATION ###########
+#######################################
+def back_propagation(y_pred, sample_i):
+    global samples, targets, x, weights, z
+
+    ########################################
+    ### CALCULATE LOSS AND LOSS GRADIENT ###
+    loss = mse(targets[sample_i], y_pred)
+    loss_gradient = mse_derivative(targets[sample_i], y_pred)
+
+    ######################################
+    ### CALCULATE ACTIVATION GRADIENTS ###
+    # store the gradients in a two dimensional array similar to x and z
+    activation_gradient = [
+        [],      # layer 0 has no activation function
+        [0, 0],  # layer 1 has 2 neurons
+        [0]      # layer 2 has 1 neuron
+    ]
+
+    # LAYER 2 
+    activation_gradient[2][0] = sigmoid_derivative(y_pred)
+    # LAYER 1
+    activation_gradient[1][0] = sigmoid_derivative(x[1][0])
+    activation_gradient[1][1] = sigmoid_derivative(x[1][1])
+    # LAYER 0
+    # no activation function here
+    
+    #############################
+    ### CALCULATE Z GRADIENTS ###
+    # LAYER 2
+    z_gradient = [
+        [],      # layer 0 has no z
+        [0, 0],  # layer 1 has 2 neurons
+        [0]      # layer 2 has 1 neuron
+    ]
+
+    # LAYER 2
+    
