@@ -3,8 +3,10 @@
 # CSCI 4931 - Deep Learning
 # Homework 1
 
+import _collections_abc
 import numpy as np
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 # We will be implementing a hard-coded 2-2-1 neural network
 # layer 0 has 2 neurons + 1 bias
@@ -257,16 +259,16 @@ def back_propagation(y_pred, sample_i):
 # do one epoch (loop through all the samples once)
 def do_epoch():
     # we're going to save the loss from each sample
-    sample_losses = []
+    sample_predictions = []
 
     # for each sample, do a forward pass and then a back propagation
     for i in range(len(samples)):
         y_pred = forward_pass(i)
+        sample_predictions.append(y_pred)
         loss = back_propagation(y_pred, i)
-        sample_losses.append(loss)
 
     # return the mean square error of all the samples
-    return mse(targets, y_pred)
+    return mse(targets, sample_predictions)
 
 
 # calls do_epoch n times and returns a list of the losses
@@ -290,6 +292,20 @@ def train(n_epochs):
     return loss_by_epoch
 
 
+# graph the MSE loss over epochs
+def plot_loss(loss_by_epoch):
+    global n_epochs, learning_rate
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(range(1, len(loss_by_epoch) + 1), loss_by_epoch, label="Training Loss (MSE)", color="blue")
+    plt.title(f"MSE Loss vs. Epochs (n_epochs = {n_epochs}, learning_rate = {learning_rate})")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss (MSE)")
+    plt.grid(True, linestyle="--", alpha=0.7)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
 
 ################################################################
 ############################# MAIN #############################
@@ -305,6 +321,9 @@ def main():
 
     # print the final loss
     print(f"\nFinal Loss (MSE): {loss_by_epoch[-1]:.4f}")
+
+    # graph the loss over epochs
+    plot_loss(loss_by_epoch)
 
 
 
