@@ -4,6 +4,7 @@
 # Homework 1
 
 import numpy as np
+import tqdm
 
 # We will be implementing a hard-coded 2-2-1 neural network
 # layer 0 has 2 neurons + 1 bias
@@ -280,10 +281,16 @@ def train(n_epochs):
     loss_by_epoch = []
 
     # loop for the number of epochs
-    for i in range(n_epochs):
-        total_loss = do_epoch()
-        loss_by_epoch.append(total_loss)
-        print("Epoch", i + 1, "Total Loss (MSE):", total_loss)
+    with tqdm(range(n_epochs), desc="Training model", unit="epoch") as pbar:
+        for i in pbar:
+            total_loss = do_epoch()
+            loss_by_epoch.append(total_loss)
+            pbar.set_postfix(loss=f"Loss (MSE): {total_loss:.4f}")
+
+            # if it has converged, print the results and exit
+            if total_loss == 0:
+                print("It has converged!")
+                break
 
     # return the loss by epoch for graphing
     return loss_by_epoch
@@ -297,4 +304,10 @@ def main():
     print("**************************************************************")
     print("********** 2-2-1 Neural Network for Logical OR Gate **********")
     print("**************************************************************")
-    print()
+    print(f"Starting training with {n_epochs} epochs and a learning rate of {learning_rate}...")
+
+    # run the training function
+    loss_by_epoch = train(n_epochs)
+
+    # print the final loss
+    print(f"\nFinal Loss (MSE): {loss_by_epoch[-1]:.4f}")
