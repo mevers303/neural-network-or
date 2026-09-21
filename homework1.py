@@ -5,15 +5,25 @@
 
 import numpy as np
 
-# our 2-2-1 neural network
+# We will be implementing a hard-coded 2-2-1 neural network
 # layer 0 has 2 neurons + 1 bias
 # layer 1 has 2 neurons + 1 bias
 # layer 2 has 1 neuron
 
 
-#############################
-######### VARIABLES #########
-#############################
+
+#######################################
+########### HYPERPARAMETERS ###########
+#######################################
+learning_rate = 0.1
+epochs = 1000
+
+
+
+
+###############################
+########## VARIABLES ##########
+###############################
 # our inputs
 samples = [
     (0, 0),
@@ -141,6 +151,7 @@ def back_propagation(y_pred, sample_i):
     loss = mse(targets[sample_i], y_pred)
     loss_gradient = mse_derivative(targets[sample_i], y_pred)
 
+
     #######################
     ### CALCULATE dσ/dz ###
     # store the gradients in a two dimensional array similar to x and z
@@ -158,6 +169,7 @@ def back_propagation(y_pred, sample_i):
     # LAYER 0
     # no activation function here
     
+
     #############################
     ### CALCULATE dz/dw ###
     # three dimensional like the weights
@@ -188,9 +200,9 @@ def back_propagation(y_pred, sample_i):
     # LAYER 0
     # no z values here because there are no weights leading into the input layer
     
+
     #######################
     ### CALCULATE dl/dw ###
-    #######################
     # same shape as the weights
     total_gradient = [
         [],  # layer 0 has no z because it is the input layer
@@ -220,4 +232,14 @@ def back_propagation(y_pred, sample_i):
     # LAYER 0
     # no weights to update here because there are no weights leading into the input layer
 
+
+    ##########################
+    ### UPDATE THE WEIGHTS ###
+    global learning_rate
+
+    for layer in range(1, len(weights)):
+        for neuron in range(len(weights[layer])):
+            for weight in range(len(weights[layer][neuron])):
+                weights[layer][neuron][weight] -= learning_rate * total_gradient[layer][neuron][weight]
+    
     
