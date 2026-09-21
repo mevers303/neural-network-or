@@ -3,7 +3,6 @@
 # CSCI 4931 - Deep Learning
 # Homework 1
 
-import _collections_abc
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -20,6 +19,7 @@ import matplotlib.pyplot as plt
 #############################################################
 learning_rate = 0.1
 n_epochs = 1000000
+convergence_threshold = 1e-5
 
 # set seed to get same random weights every time
 np.random.seed(1337)
@@ -62,11 +62,11 @@ x = [
 weights = [
     [],  # layer 0 has no weights because it is the input layer
     [
-        np.random.rand(3).tolist(),  # layer 1, neuron 0
-        np.random.rand(3).tolist()  # layer 1, neuron 1
+        (np.random.rand(3) * 2 - 1).tolist(),  # layer 1, neuron 0
+        (np.random.rand(3) * 2 - 1).tolist()  # layer 1, neuron 1
     ],  
     [
-        np.random.rand(3).tolist()  # layer 2, neuron 0
+        (np.random.rand(3) * 2 - 1).tolist()  # layer 2, neuron 0
     ]
 ]
 
@@ -282,6 +282,8 @@ def do_epoch():
 
 # calls do_epoch n times and returns a list of the losses
 def train(n_epochs):
+    global convergence_threshold
+
     # save the loss at the end of each epoch
     loss_by_epoch = []
 
@@ -290,10 +292,10 @@ def train(n_epochs):
         for i in pbar:
             total_loss = do_epoch()
             loss_by_epoch.append(total_loss)
-            pbar.set_postfix(loss=f"Loss (MSE): {total_loss:.4f}")
+            pbar.set_postfix(loss=total_loss)
 
             # if it has converged, print the results and exit
-            if total_loss == 0:
+            if total_loss <= convergence_threshold:
                 print("It has converged!")
                 break
 
