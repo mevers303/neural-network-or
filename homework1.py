@@ -217,18 +217,28 @@ def back_propagation(y_pred, sample_i):
         ]
     ]
 
+    # let's make a variable, delta, to store the partial derivative at various points
+    delta = [
+        [],      # layer 0 has no delta because it is the input layer
+        [0, 0],  # layer 1 has 2 neurons
+        [0]      # layer 2 has 1 neuron
+    ]
+
     # now do the chain rule: dl/dw = dl/dz * dz/dw
     # LAYER 2
-    total_gradient[2][0][0] = loss_gradient * activation_gradient[2][0] * z_gradient[2][0][0]
-    total_gradient[2][0][1] = loss_gradient * activation_gradient[2][0] * z_gradient[2][0][1]
-    total_gradient[2][0][2] = loss_gradient * activation_gradient[2][0] * z_gradient[2][0][2]
+    delta[2][0] = loss_gradient * activation_gradient[2][0]
+    total_gradient[2][0][0] = delta[2][0] * z_gradient[2][0][0]
+    total_gradient[2][0][1] = delta[2][0] * z_gradient[2][0][1]
+    total_gradient[2][0][2] = delta[2][0] * z_gradient[2][0][2]
     # LAYER 1
-    total_gradient[1][0][0] = loss_gradient * activation_gradient[1][0] * z_gradient[1][0][0]
-    total_gradient[1][0][1] = loss_gradient * activation_gradient[1][0] * z_gradient[1][0][1]
-    total_gradient[1][0][2] = loss_gradient * activation_gradient[1][0] * z_gradient[1][0][2]
-    total_gradient[1][1][0] = loss_gradient * activation_gradient[1][1] * z_gradient[1][1][0]
-    total_gradient[1][1][1] = loss_gradient * activation_gradient[1][1] * z_gradient[1][1][1]
-    total_gradient[1][1][2] = loss_gradient * activation_gradient[1][1] * z_gradient[1][1][2]
+    delta[1][0] = delta[2][0] * weights[2][0][0] * activation_gradient[1][0]
+    total_gradient[1][0][0] = delta[1][0] * z_gradient[1][0][0]
+    total_gradient[1][0][1] = delta[1][0] * z_gradient[1][0][1]
+    total_gradient[1][0][2] = delta[1][0] * z_gradient[1][0][2]
+    delta[1][1] = delta[2][0] * weights[2][0][1] * activation_gradient[1][1]
+    total_gradient[1][1][0] = delta[1][1] * z_gradient[1][1][0]
+    total_gradient[1][1][1] = delta[1][1] * z_gradient[1][1][1]
+    total_gradient[1][1][2] = delta[1][1] * z_gradient[1][1][2]
     # LAYER 0
     # no weights to update here because there are no weights leading into the input layer
 
