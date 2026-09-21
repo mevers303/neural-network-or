@@ -17,9 +17,9 @@ import matplotlib.pyplot as plt
 #############################################################
 ###################### HYPERPARAMETERS ######################
 #############################################################
-learning_rate = 0.1
-n_epochs = 1000
-convergence_threshold = 1e-5
+learning_rate = 3.33
+n_epochs = 10000
+convergence_threshold = 1e-8
 hidden_layer_size = 2
 
 # set seed to get same random weights every time
