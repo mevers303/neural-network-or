@@ -12,18 +12,19 @@ import numpy as np
 
 
 
-#######################################
-########### HYPERPARAMETERS ###########
-#######################################
+#############################################################
+###################### HYPERPARAMETERS ######################
+#############################################################
 learning_rate = 0.1
-epochs = 1000
+n_epochs = 1000
+
+# set seed to get same random weights every time
+np.random.seed(1337)
 
 
-
-
-###############################
-########## VARIABLES ##########
-###############################
+#####################################################
+##################### VARIABLES #####################
+#####################################################
 # our inputs
 samples = [
     (0, 0),
@@ -80,9 +81,9 @@ z = [
 
 
 
-#################################
-########### FUNCTIONS ###########
-#################################
+#######################################################
+###################### FUNCTIONS ######################
+#######################################################
 # our activation function and its derivative
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -91,14 +92,17 @@ def sigmoid_derivative(x):
     s = sigmoid(x)
     return s * (1 - s)
 
-# our loss function and its mse_derivative
-# NOTE: this is for stochastic gradient descent, so we don't divide by n because n always equals 1
-def mse(y_true, y_pred):
-    return np.mean((y_true - y_pred) ** 2) / 2
+# our loss function and its derivative
+# NOTE: this is for stochastic gradient descent
+def sample_loss(y_true, y_pred):
+    return 1/2 * (y_true - y_pred) ** 2
 
-def mse_derivative(y_true, y_pred):
+def loss_derivative(y_true, y_pred):
     # Derivative with respect to y_pred: 2 * (y_pred - y_true) / N
     return y_pred - y_true
+
+def mse(y_true, y_pred):
+    return np.mean((np.array(y_true) - np.array(y_pred)) ** 2)
 
 
 
@@ -148,8 +152,8 @@ def back_propagation(y_pred, sample_i):
 
     #####################################
     ### CALCULATE LOSS AND dL/dy_pred ###
-    loss = mse(targets[sample_i], y_pred)
-    loss_gradient = mse_derivative(targets[sample_i], y_pred)
+    loss = sample_loss(targets[sample_i], y_pred)
+    loss_gradient = loss_derivative(targets[sample_i], y_pred)
 
 
     #######################
@@ -242,4 +246,55 @@ def back_propagation(y_pred, sample_i):
             for weight in range(len(weights[layer][neuron])):
                 weights[layer][neuron][weight] -= learning_rate * total_gradient[layer][neuron][weight]
     
-    
+
+    ################
+    ### COMPLETE ###
+    # what to return?  loss i guess...
+    return loss
+
+
+
+
+
+##########################################
+########### TRAINING FUNCTIONS ###########
+##########################################
+# do one epoch (loop through all the samples once)
+def do_epoch():
+    # we're going to save the loss from each sample
+    sample_losses = []
+
+    # for each sample, do a forward pass and then a back propagation
+    for i in range(len(samples)):
+        y_pred = forward_pass(i)
+        loss = back_propagation(y_pred, i)
+        sample_losses.append(loss)
+
+    # return the mean square error of all the samples
+    return mse(targets, y_pred)
+
+
+# calls do_epoch n times and returns a list of the losses
+def train(n_epochs):
+    # save the loss at the end of each epoch
+    loss_by_epoch = []
+
+    # loop for the number of epochs
+    for i in range(n_epochs):
+        total_loss = do_epoch()
+        loss_by_epoch.append(total_loss)
+        print("Epoch", i + 1, "Total Loss (MSE):", total_loss)
+
+    # return the loss by epoch for graphing
+    return loss_by_epoch
+
+
+
+################################################################
+############################# MAIN #############################
+################################################################
+def main():
+    print("**************************************************************")
+    print("********** 2-2-1 Neural Network for Logical OR Gate **********")
+    print("**************************************************************")
+    print()
