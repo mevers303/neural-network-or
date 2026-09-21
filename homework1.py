@@ -4,7 +4,7 @@
 # Homework 1
 
 import numpy as np
-import tqdm
+from tqdm import tqdm
 
 # We will be implementing a hard-coded 2-2-1 neural network
 # layer 0 has 2 neurons + 1 bias
@@ -60,13 +60,11 @@ x = [
 weights = [
     [],  # layer 0 has no weights because it is the input layer
     [
-        np.random.rand(2).tolist(),  # layer 1, neuron 0
-        np.random.rand(2).tolist(),  # layer 1, neuron 1
-        np.random.rand(1).tolist()   # layer 1, bias
+        np.random.rand(3).tolist(),  # layer 1, neuron 0
+        np.random.rand(3).tolist()  # layer 1, neuron 1
     ],  
     [
-        np.random.rand(2).tolist(),  # layer 2, neuron 0
-        np.random.rand(1).tolist()   # layer 2, bias
+        np.random.rand(3).tolist()  # layer 2, neuron 0
     ]
 ]
 
@@ -181,13 +179,11 @@ def back_propagation(y_pred, sample_i):
     z_gradient = [
         [],  # layer 0 has no z because it is the input layer
         [
-            np.zeros(2).tolist(),  # layer 1, neuron 0
-            np.zeros(2).tolist(),  # layer 1, neuron 1
-            np.zeros(1).tolist()   # layer 1, bias
+            np.zeros(3).tolist(),  # layer 1, neuron 0
+            np.zeros(3).tolist()  # layer 1, neuron 1
         ],  
         [
-            np.zeros(2).tolist(),  # layer 2, neuron 0
-            np.zeros(1).tolist()   # layer 2, bias
+            np.zeros(3).tolist()  # layer 2, neuron 0
         ]
     ]
 
@@ -212,13 +208,11 @@ def back_propagation(y_pred, sample_i):
     total_gradient = [
         [],  # layer 0 has no z because it is the input layer
         [
-            np.zeros(2).tolist(),  # layer 1, neuron 0
-            np.zeros(2).tolist(),  # layer 1, neuron 1
-            np.zeros(1).tolist()   # layer 1, bias
+            np.zeros(3).tolist(),  # layer 1, neuron 0
+            np.zeros(3).tolist()   # layer 1, neuron 1
         ],  
         [
-            np.zeros(2).tolist(),  # layer 2, neuron 0
-            np.zeros(1).tolist()   # layer 2, bias
+            np.zeros(3).tolist()  # layer 2, neuron 0
         ]
     ]
 
@@ -311,3 +305,8 @@ def main():
 
     # print the final loss
     print(f"\nFinal Loss (MSE): {loss_by_epoch[-1]:.4f}")
+
+
+
+if __name__ == "__main__":
+    main()
