@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 ###################### HYPERPARAMETERS ######################
 #############################################################
 learning_rate = 0.1
-n_epochs = 1000
+n_epochs = 1000000
 
 # set seed to get same random weights every time
 np.random.seed(1337)
@@ -89,9 +89,8 @@ z = [
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-def sigmoid_derivative(x):
-    s = sigmoid(x)
-    return s * (1 - s)
+def sigmoid_derivative(y_pred):
+    return y_pred * (1 - y_pred)
 
 # our loss function and its derivative
 # NOTE: this is for stochastic gradient descent
@@ -320,7 +319,7 @@ def main():
     loss_by_epoch = train(n_epochs)
 
     # print the final loss
-    print(f"\nFinal Loss (MSE): {loss_by_epoch[-1]:.4f}")
+    print(f"\nFinal Loss (MSE): {loss_by_epoch[-1]:.10f}")
 
     # graph the loss over epochs
     plot_loss(loss_by_epoch)
